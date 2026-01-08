@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Get a Free Quote</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f2f2f2;
+    display:flex;
+    justify-content:center;
+    padding:40px 0;
+}
+form{
+    background:#fff;
+    padding:25px 30px;
+    border-radius:10px;
+    width:400px;
+    box-shadow:0 0 15px rgba(0,0,0,.1);
+}
+h2{
+    text-align:center;
+}
+label{
+    display:block;
+    margin-top:15px;
+    font-weight:bold;
+}
+input,select,textarea{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border-radius:5px;
+    border:1px solid #ccc;
+}
+input[readonly]{
+    background:#eee;
+}
+.cost{
+    margin-top:10px;
+    background:#f9f9f9;
+    padding:10px;
+    border-radius:5px;
+    font-size:14px;
+}
+button{
+    width:100%;
+    margin-top:20px;
+    padding:12px;
+    background:#4CAF50;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    font-size:16px;
+    cursor:pointer;
+}
+button:hover{
+    background:#45a049;
+}
+</style>
+</head>
+
+<body>
+
+<form id="quoteForm">
+<h2>Get a Free Quote</h2>
+
+<label>Name / Surname *</label>
+<input type="text" required>
+
+<label>Phone number *</label>
+<input type="tel" required>
+
+<label>Email address *</label>
+<input type="email" required>
+
+<label>When do you plan to move? *</label>
+<input type="datetime-local" required>
+
+<label>How many hours do you need for? *</label>
+<input type="number" id="hours" value="2" min="2">
+
+<label>What size of van do you need for? *</label>
+<select id="van">
+    <option value="">Select</option>
+    <option value="small">Small</option>
+    <option value="medium">Medium</option>
+</select>
+
+<label>Do you need help with loading/unloading? *</label>
+<select id="help">
+    <option value="">Select</option>
+    <option value="no">No help required</option>
+    <option value="driver">Driver help</option>
+    <option value="driver_helper">Driver help + 1 helper</option>
+</select>
+
+<label>Collection address *</label>
+<input type="text" required>
+
+<label>Collection stairs</label>
+<select class="stairs">
+    <option value="0">Ground floor / lift</option>
+    <option value="1">1 flight</option>
+    <option value="2">2 flights</option>
+    <option value="3">3 flights</option>
+    <option value="4">4 flights</option>
+</select>
+
+<label>Via address (optional)</label>
+<input type="text">
+
+<label>Via stairs</label>
+<select class="stairs">
+    <option value="0">Ground floor / lift</option>
+    <option value="1">1 flight</option>
+    <option value="2">2 flights</option>
+    <option value="3">3 flights</option>
+    <option value="4">4 flights</option>
+</select>
+
+<label>Delivery address *</label>
+<input type="text" required>
+
+<label>Delivery stairs</label>
+<select class="stairs">
+    <option value="0">Ground floor / lift</option>
+    <option value="1">1 flight</option>
+    <option value="2">2 flights</option>
+    <option value="3">3 flights</option>
+    <option value="4">4 flights</option>
+</select>
+
+<label>Total cost</label>
+<input type="text" id="total" readonly>
+
+<div class="cost" id="details"></div>
+
+<button type="submit">Submit</button>
+</form>
+
+<script>
+const hoursInput=document.getElementById("hours");
+const help=document.getElementById("help");
+const stairs=document.querySelectorAll(".stairs");
+const total=document.getElementById("total");
+const details=document.getElementById("details");
+
+function calc(){
+    let hours=Math.max(2,Number(hoursInput.value));
+    let rate=0, persons=0;
+
+    if(help.value==="no"){rate=40;}
+    if(help.value==="driver"){rate=45;persons=1;}
+    if(help.value==="driver_helper"){rate=60;persons=2;}
+
+    let hoursCost=hours*rate;
+    let stairsCost=0;
+
+    if(persons>0){
+        stairs.forEach(s=>{
+            stairsCost+=Number(s.value)*10*persons;
+        });
+    }
+
+    let totalCost=hoursCost+stairsCost;
+    total.value=totalCost>0 ? "£"+totalCost : "";
+
+    details.innerHTML=`
+        Hours: ${hours} × £${rate} = £${hoursCost}<br>
+        Stairs cost: £${stairsCost}<br>
+        <strong>Total: £${totalCost}</strong>
+    `;
+}
+
+hoursInput.oninput=calc;
+help.onchange=calc;
+stairs.forEach(s=>s.onchange=calc);
+
+document.getElementById("quoteForm").onsubmit=e=>{
+    e.preventDefault();
+    alert("Request sent! Total: "+total.value);
+};
+
+calc();
+</script>
+
+</body>
+</html>
